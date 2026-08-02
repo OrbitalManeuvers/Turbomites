@@ -17,6 +17,11 @@ type
 
   TPointArray = array of TPoint;
 
+  TCellArray = record
+    Grid: array[0..GRID_EXTENT, 0..GRID_EXTENT] of Byte;
+  end;
+
+
 implementation
 
 

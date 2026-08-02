@@ -12,7 +12,9 @@ uses
   u_Scenarios in 'engine\u_Scenarios.pas',
   u_States in 'engine\u_States.pas',
   u_StateMachines in 'engine\u_StateMachines.pas',
-  u_Grids in 'engine\u_Grids.pas';
+  u_Grids in 'engine\u_Grids.pas',
+  u_SimThreads in 'engine\u_SimThreads.pas',
+  u_RenderBuffers in 'common\u_RenderBuffers.pas';
 
 {$R *.res}
 

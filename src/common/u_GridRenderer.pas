@@ -3,18 +3,16 @@ unit u_GridRenderer;
 interface
 
 uses System.Skia, System.Types,
-  u_SimTypes, u_Grids;
+
+  u_SimTypes, u_Grids, u_RenderBuffers;
 
 type
-  TAntRenderInfo = record
-    Loc: TPoint;
-    Facing: TDirection;
-  end;
-  TAntRenderArray = array of TAntRenderInfo;
-
   TGridRenderer = class
     class procedure RenderFrame(aCanvas: ISkCanvas; aWidth, aHeight: Integer;
-      aGrid: TGrid; const Ants: TAntRenderArray);
+      const aGrid: TCellArray; const Ants: TAntRenderArray); overload;
+
+    class procedure RenderFrame(aCanvas: ISkCanvas; aWidth, aHeight: Integer;
+      const ARenderBuffer: TRenderBuffer); overload;
   end;
 
 implementation
@@ -31,8 +29,10 @@ const
 
 { TGridRenderer }
 
+
+
 class procedure TGridRenderer.RenderFrame(aCanvas: ISkCanvas; aWidth,
-  aHeight: Integer; aGrid: TGrid; const Ants: TAntRenderArray);
+  aHeight: Integer; const aGrid: TCellArray; const Ants: TAntRenderArray);
 var
   cellSize: Single;
   offsetX, offsetY: Single;
@@ -108,6 +108,12 @@ begin
     path.Close;
     aCanvas.DrawPath(path.Detach, paint);
   end;
+end;
+
+class procedure TGridRenderer.RenderFrame(aCanvas: ISkCanvas; aWidth, aHeight: Integer;
+  const ARenderBuffer: TRenderBuffer);
+begin
+
 end;
 
 end.

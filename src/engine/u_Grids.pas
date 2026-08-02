@@ -3,13 +3,12 @@ unit u_Grids;
 interface
 
 uses System.Types,
+
   u_SimTypes;
 
 type
   { TGrid }
-  TGrid = class
-  private
-    fCells: array[0..GRID_EXTENT, 0..GRID_EXTENT] of Byte;
+  TGrid = record helper for TCellArray
   public
     procedure Clear;
     function GetColor(aX, aY: Integer): Byte; overload;
@@ -27,17 +26,17 @@ procedure TGrid.Clear;
 begin
   for var aY := 0 to GRID_EXTENT do
     for var aX := 0 to GRID_EXTENT do
-      fCells[aX, aY] := 0;
+      Grid[aX, aY] := 0;
 end;
 
 function TGrid.GetColor(aX, aY: Integer): Byte;
 begin
-  Result := fCells[aX, aY];
+  Result := Grid[aX, aY];
 end;
 
 procedure TGrid.SetColor(aX, aY: Integer; aColor: Byte);
 begin
-  fCells[aX, aY] := aColor;
+  Grid[aX, aY] := aColor;
 end;
 
 function TGrid.GetColor(Loc: TPoint): Byte;

@@ -7,24 +7,25 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.Skia, Vcl.Skia, Vcl.ExtCtrls,
   Vcl.StdCtrls,
-  u_Simulator, u_SimTypes, u_Scenarios;
+  u_Simulator, u_SimTypes, u_Scenarios, u_SimThreads,
+  u_RenderBuffers;
 
 type
   TMainForm = class(TForm)
     Arena: TSkAnimatedPaintBox;
-    MainTimer: TTimer;
     ToolPanel: TPanel;
     Button1: TButton;
+    ThreadImitation: TTimer;
     procedure ArenaAnimationDraw(ASender: TObject; const ACanvas: ISkCanvas;
       const ADest: TRectF; const AProgress: Double; const AOpacity: Single);
-    procedure OnTimerTick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure ThreadImitationTimer(Sender: TObject);
   private
-    Sim: TSimulator;
     Scenario: TScenario;
-    TickCounter: Integer;
+    SimThread: TSimThread;
+    RenderBuffer: TRenderBuffer;
     procedure RenderStartupView(ACanvas: ISkCanvas; aWidth, aHeight: Integer);
 
     procedure UpdateStats;
@@ -38,20 +39,15 @@ implementation
 
 {$R *.dfm}
 
-uses System.UITypes;
+uses System.UITypes, u_GridRenderer;
 
 { TMainForm }
-procedure TMainForm.Button1Click(Sender: TObject);
-begin
-  Sim.BeginSession(Scenario);
-  MainTimer.Enabled := True;
-end;
-
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Arena.ControlStyle := Arena.ControlStyle + [csOpaque];
-  Sim := TSimulator.Create;
+  SimThread := TSimThread.Create;
 
+  // !! hard coded scenario selection for now
   Scenario := TScenario.Create;
   try
     Scenario.LoadFromFile('first.json');
@@ -64,36 +60,48 @@ end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
 begin
-  Sim.Free;
+  SimThread.Free;
+  Scenario.Free;
+end;
+
+procedure TMainForm.Button1Click(Sender: TObject);
+begin
+  SimThread.LoadScenario(Scenario);
+
+// SimThread.Settings := settings
+
+// ResetStats;
+
+  SimThread.Active := True;
+
+  ThreadImitation.Enabled := True;
 end;
 
 procedure TMainForm.ArenaAnimationDraw(ASender: TObject;
   const ACanvas: ISkCanvas; const ADest: TRectF; const AProgress: Double;
   const AOpacity: Single);
+var
+  paint: ISkPaint;
 begin
-  // forward to simulator
-  if MainTimer.Enabled then
-    Sim.Render(ACanvas, Round(ADest.Width), Round(ADest.Height))
-  else
-    RenderStartupView(ACanvas, Round(ADest.Width), Round(ADest.Height));
-end;
-
-procedure TMainForm.OnTimerTick(Sender: TObject);
-begin
-  // step simulator
-  if MainTimer.Enabled then
+  var size := Point(Round(ADest.Width), Round(ADest.Height));
+  if SimThread.Active then
   begin
 
-    // loop here for 1x, 2x, 4x
-    for var i := 1 to 100 do
-    begin
-      Inc(TickCounter);
-      Sim.Step;
-    end;
-  end;
+    SimThread.PullSnapshot(RenderBuffer);
 
-  UpdateStats;
+    paint := TSkPaint.Create;
+    paint.Color := TAlphaColors.Darkslategrey; // make letterbox slightly visible
+    paint.Style := TSkPaintStyle.Fill;
+    aCanvas.DrawRect(RectF(0, 0, size.X, size.Y), paint);
 
+    // call renderer
+    TGridRenderer.RenderFrame(ACanvas, size.X, size.Y, RenderBuffer);
+
+
+    UpdateStats; // (dummy);
+  end
+  else
+    RenderStartupView(ACanvas, size.X, size.Y);
 end;
 
 procedure TMainForm.RenderStartupView(ACanvas: ISkCanvas; aWidth: Integer; aHeight: Integer);
@@ -120,6 +128,11 @@ begin
   Font.MeasureText(S_CAPTION, TextBounds, Paint);
   TextX := (AWidth - TextBounds.Width) / 2;
   ACanvas.DrawSimpleText(S_CAPTION, TextX, AHeight * 0.22, Font, Paint);
+end;
+
+procedure TMainForm.ThreadImitationTimer(Sender: TObject);
+begin
+  SimThread.Step;
 end;
 
 procedure TMainForm.UpdateStats;

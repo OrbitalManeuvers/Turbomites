@@ -52,11 +52,10 @@ object MainForm: TMainForm
       OnClick = Button1Click
     end
   end
-  object MainTimer: TTimer
-    Enabled = False
+  object ThreadImitation: TTimer
     Interval = 16
-    OnTimer = OnTimerTick
-    Left = 330
-    Top = 16
+    OnTimer = ThreadImitationTimer
+    Left = 325
+    Top = 36
   end
 end

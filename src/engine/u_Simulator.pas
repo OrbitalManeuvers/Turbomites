@@ -2,9 +2,9 @@ unit u_Simulator;
 
 interface
 
-uses System.Skia, System.Types,
+uses System.Types,
   u_SimTypes, u_States, u_StateMachines, u_Grids,
-  u_GridRenderer, u_Scenarios;
+  u_GridRenderer, u_Scenarios, u_RenderBuffers;
 
 type
   TAnt = record
@@ -14,11 +14,12 @@ type
   end;
 
   TSimulator = class
-  private
+  public
     fScenario: TScenario;
-    fGrid: TGrid;
+    fGrid: TCellArray;
     fAnts: TArray<TAnt>;
     fAntRenderInfo: TAntRenderArray;
+    fStats: TSessionStats;
   public
     constructor Create;
     destructor Destroy; override;
@@ -27,7 +28,7 @@ type
     procedure EndSession;
 
     procedure Step;
-    procedure Render(ACanvas: ISkCanvas; aWidth, aHeight: Integer);
+    property Stats: TSessionStats read fStats;
   end;
 
 implementation
@@ -39,7 +40,6 @@ uses System.UITypes;
 constructor TSimulator.Create;
 begin
   inherited Create;
-  fGrid := TGrid.Create;
   fGrid.Clear;
   SetLength(fAnts, 0);
   SetLength(fAntRenderInfo, 0);
@@ -47,7 +47,6 @@ end;
 
 destructor TSimulator.Destroy;
 begin
-  fGrid.Free;
   inherited;
 end;
 
@@ -61,6 +60,8 @@ begin
     var dot := fScenario.Dots[i];
     fGrid.SetColor(dot.Loc.x, dot.Loc.Y, dot.Color);
   end;
+
+  FillChar(fStats, SizeOf(fStats), 0);
 
   SetLength(fAnts, fScenario.AntCount);
   SetLength(fAntRenderInfo, fScenario.AntCount);
@@ -83,18 +84,6 @@ begin
   SetLength(fAnts, 0);
 end;
 
-procedure TSimulator.Render(ACanvas: ISkCanvas; aWidth, aHeight: Integer);
-var
-  paint: ISkPaint;
-begin
-  paint := TSkPaint.Create;
-  paint.Color := TAlphaColors.Darkslategrey; // make letterbox slightly visible
-  paint.Style := TSkPaintStyle.Fill;
-  aCanvas.DrawRect(RectF(0, 0, aWidth, aHeight), paint);
-
-  TGridRenderer.RenderFrame(ACanvas, aWidth, aHeight, fGrid, fAntRenderInfo);
-end;
-
 procedure TSimulator.Step;
 begin
   for var i := 0 to High(fAnts) do
@@ -106,6 +95,8 @@ begin
     var rule := fAnts[i].State.CurrentState.GetRule(color);
 
     // 3. write rule color
+    Inc(fStats.Erased[color]);
+    Inc(fStats.Written[rule.Write]);
     fGrid.SetColor(fAnts[i].Loc, rule.Write);
 
     // 4. turn rule direction

@@ -1,0 +1,8 @@
+title: Turbomites Dev Blog
+description: Development notes for the Turbomites project.
+baseurl: "/Turbomites"
+url: "https://orbitalmaneuvers.github.io"
+remote_theme: jekyll/minima
+minima:
+  skin: dark
+markdown: kramdown

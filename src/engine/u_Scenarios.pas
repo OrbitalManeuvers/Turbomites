@@ -17,8 +17,14 @@ type
     StateName: string;
   end;
 
+  TScenarioInfo = record
+    Title: string;
+    Description: string;
+  end;
+
   TScenario = class
   private
+    fTitle: string;
     fDescription: string;
     fDots: TArray<TStartDot>;
     fDotCount: Integer;
@@ -32,6 +38,9 @@ type
     destructor Destroy; override;
     procedure LoadFromFile(const aFileName: string);
 
+    class function GetInfo(const AFileName: string): TScenarioInfo;
+
+    property Title: string read fTitle;
     property Description: string read fDescription;
 
     property DotCount: Integer read fDotCount;
@@ -52,6 +61,7 @@ const
   TURN_CODES: array[TTurn] of Char = ('?', 'L', 'R', 'A', 'N', 'S', 'E', 'W');
   FACING_CODES: array[TDirection] of Char = ('N', 'E', 'S', 'W');
 
+  KEY_TITLE = 'title';
   KEY_DESCRIPTION = 'description';
   KEY_STATES = 'states';
   KEY_ANTS = 'ants';
@@ -197,43 +207,18 @@ begin
   Result := fDots[I];
 end;
 
-
-
-// Sample:
-
-(*
-{
-  "description": "A pair of ants drawing the Mona Lisa and her twin sister. Requires 6 quadrillion steps.",
-  "states": [
-    {
-      "name": "start",
-      "rules": [
-        {"find": 0, "write": 2, "turn": "R", "state": "one"},
-        {"find": 2, "write": 1, "turn": "L"},
-        {"find": 2, "write": 0, "turn": "A"},
-        {"write": 0}
-      ]
-    },
-    {
-      "name": "one",
-      "rules": [
-        {"find": 0, "write": 1, "turn": "R"},
-        {"find": 1, "write": 0, "turn": "L"},
-        {"find": 2, "write": 0, "turn": "N", "state": "start"}
-      ]
-    }
-  ],
-  "ants": [
-    {"x": 128, "y": 128, "facing": "N", "state": "start"},
-    {"x": 100, "y": 128, "facing": "E", "state": "start"}
-  ],
-  "dots": [
-    {"x": 64, "y": 64, "color": 2}
-  ]
-}
-
-*)
-
+class function TScenario.GetInfo(const AFileName: string): TScenarioInfo;
+var
+  JSON: TJSONObject;
+begin
+  Result := Default(TScenarioInfo);
+  if TFile.Exists(AFileName) then
+  begin
+    JSON := TJSONObject.ParseJSONValue(TFile.ReadAllText(AFileName)) as TJSONObject;
+    Result.Description := JSON.StrValue(KEY_DESCRIPTION);
+    Result.Title := JSON.StrValue(KEY_TITLE);
+  end;
+end;
 
 procedure TScenario.LoadFromFile(const aFileName: string);
 var
@@ -244,6 +229,7 @@ begin
 
   JSON := TJSONObject.ParseJSONValue(TFile.ReadAllText(aFileName)) as TJSONObject;
   try
+    fTitle := JSON.StrValue(KEY_TITLE);
     fDescription := JSON.StrValue(KEY_DESCRIPTION);
 
     // load states
@@ -280,7 +266,6 @@ begin
       end;
     end;
 
-
     // load dots
     var arrDots: TJSONArray;
     if JSON.TryGetValue(KEY_DOTS, arrDots) then
@@ -302,7 +287,6 @@ begin
 
   fAntCount := Length(fAnts);
   fDotCount := Length(fDots);
-
 end;
 
 

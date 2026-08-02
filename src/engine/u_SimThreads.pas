@@ -51,8 +51,9 @@ end;
 destructor TSimThread.Destroy;
 begin
   Terminate;
-  fActive := True; // unblock the loop so it can see Terminated
-  WaitFor;
+  fActive := True;
+  if Started then
+    WaitFor;
   fLock.Free;
   fSimulator.Free;
   inherited;
@@ -60,13 +61,27 @@ end;
 
 procedure TSimThread.EndScenario;
 begin
-  fSimulator.EndSession;
+  fActive := False;
+  fLock.Acquire;
+  try
+    fSimulator.EndSession;
+    fIsDirty := False;
+  finally
+    fLock.Release;
+  end;
 end;
 
 procedure TSimThread.LoadScenario(aScenario: TScenario);
 begin
-  fScenario := aScenario;
-  fSimulator.BeginSession(aScenario);
+  fActive := False;
+  fLock.Acquire;
+  try
+    fScenario := aScenario;
+    fSimulator.BeginSession(aScenario);
+    fIsDirty := False;
+  finally
+    fLock.Release;
+  end;
 end;
 
 procedure TSimThread.SetActive(const Value: Boolean);
@@ -121,17 +136,21 @@ end;
 
 procedure TSimThread.SetSpeed(const Value: TSimSpeed);
 begin
-  case Value of
-    1: begin fStepsPerBatch := 1;    fSleepMs := 50;  end;
-    2: begin fStepsPerBatch := 5;    fSleepMs := 20;  end;
-    3: begin fStepsPerBatch := 20;   fSleepMs := 10;  end;
-    4: begin fStepsPerBatch := 100;  fSleepMs := 5;   end;
-    5: begin fStepsPerBatch := 500;  fSleepMs := 2;   end;
-    6: begin fStepsPerBatch := 1000; fSleepMs := 1;   end;
-    7: begin fStepsPerBatch := 2000; fSleepMs := 1;   end;
-    8: begin fStepsPerBatch := 5000; fSleepMs := 0;   end;
-    9: begin fStepsPerBatch := 10000; fSleepMs := 0;  end;
-   10: begin fStepsPerBatch := 50000; fSleepMs := 0;  end;
+  if Value <> fSpeed then
+  begin
+    fSpeed := Value;
+    case fSpeed of
+      1: begin fStepsPerBatch := 1;    fSleepMs := 50;  end;
+      2: begin fStepsPerBatch := 5;    fSleepMs := 20;  end;
+      3: begin fStepsPerBatch := 20;   fSleepMs := 10;  end;
+      4: begin fStepsPerBatch := 100;  fSleepMs := 5;   end;
+      5: begin fStepsPerBatch := 500;  fSleepMs := 2;   end;
+      6: begin fStepsPerBatch := 1000; fSleepMs := 1;   end;
+      7: begin fStepsPerBatch := 2000; fSleepMs := 1;   end;
+      8: begin fStepsPerBatch := 5000; fSleepMs := 0;   end;
+      9: begin fStepsPerBatch := 10000; fSleepMs := 0;  end;
+     10: begin fStepsPerBatch := 50000; fSleepMs := 0;  end;
+    end;
   end;
 end;
 

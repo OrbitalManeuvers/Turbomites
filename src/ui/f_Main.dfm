@@ -42,45 +42,192 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     ShowCaption = False
     TabOrder = 1
-    object Label1: TLabel
-      Left = 112
-      Top = 24
-      Width = 35
-      Height = 17
-      Caption = 'Steps:'
-    end
-    object lblTotalSteps: TLabel
-      Left = 160
-      Top = 24
-      Width = 97
-      Height = 15
-      AutoSize = False
-      Caption = '0'
-    end
-    object Button1: TButton
-      Left = 16
-      Top = 16
-      Width = 75
-      Height = 25
-      Caption = 'Button1'
+    object PageControl: TPageControl
+      Left = 0
+      Top = 0
+      Width = 287
+      Height = 734
+      ActivePage = tsRunScenario
+      Align = alClient
       TabOrder = 0
-      OnClick = Button1Click
-    end
-    object tbSimSpeed: TTrackBar
-      Left = 16
-      Top = 80
-      Width = 241
-      Height = 45
-      Min = 1
-      Position = 1
-      TabOrder = 1
-      OnChange = tbSimSpeedChange
+      ExplicitTop = 144
+      ExplicitHeight = 590
+      object tsLoadScenario: TTabSheet
+        Caption = 'Load'
+        object Label2: TLabel
+          Left = 4
+          Top = 16
+          Width = 114
+          Height = 17
+          Caption = 'Available scenarios:'
+        end
+        object ScenarioList: TControlList
+          Left = 4
+          Top = 39
+          Width = 273
+          Height = 418
+          ItemMargins.Left = 0
+          ItemMargins.Top = 0
+          ItemMargins.Right = 0
+          ItemMargins.Bottom = 0
+          ParentColor = False
+          TabOrder = 0
+          OnBeforeDrawItem = ScenarioListBeforeDrawItem
+          OnItemClick = ScenarioListItemClick
+          object lblScenarioTitle: TLabel
+            AlignWithMargins = True
+            Left = 8
+            Top = 4
+            Width = 257
+            Height = 21
+            Margins.Left = 8
+            Margins.Top = 4
+            Margins.Right = 4
+            Margins.Bottom = 4
+            Align = alTop
+            Caption = 'lblScenarioTitle'
+            Color = clWhite
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWhite
+            Font.Height = -16
+            Font.Name = 'Segoe UI Black'
+            Font.Style = []
+            ParentColor = False
+            ParentFont = False
+            StyleElements = [seClient, seBorder]
+            ExplicitWidth = 123
+          end
+          object lblScenarioDesc: TLabel
+            AlignWithMargins = True
+            Left = 8
+            Top = 28
+            Width = 257
+            Height = 38
+            Margins.Left = 8
+            Margins.Top = 4
+            Margins.Right = 4
+            Margins.Bottom = 4
+            Align = alBottom
+            AutoSize = False
+            Caption = 'lblScenarioDesc'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGray
+            Font.Height = -13
+            Font.Name = 'Segoe UI'
+            Font.Style = []
+            ParentFont = False
+            WordWrap = True
+            StyleElements = [seClient, seBorder]
+            ExplicitLeft = 0
+            ExplicitTop = 32
+            ExplicitWidth = 246
+          end
+        end
+        object btnLoad: TButton
+          Left = 4
+          Top = 463
+          Width = 133
+          Height = 33
+          Caption = 'Load Scenario'
+          TabOrder = 1
+          OnClick = btnLoadClick
+        end
+      end
+      object tsRunScenario: TTabSheet
+        Caption = 'Run'
+        ImageIndex = 1
+        object lblTotalSteps: TLabel
+          Left = 160
+          Top = 126
+          Width = 97
+          Height = 15
+          AutoSize = False
+          Caption = '0'
+        end
+        object Label1: TLabel
+          Left = 112
+          Top = 126
+          Width = 35
+          Height = 17
+          Caption = 'Steps:'
+        end
+        object lblActiveScenario: TLabel
+          Left = 8
+          Top = 36
+          Width = 98
+          Height = 17
+          Caption = 'lblActiveScenario'
+        end
+        object btnChangeScenario: TSpeedButton
+          Left = 168
+          Top = 4
+          Width = 84
+          Height = 25
+          Caption = 'Change...'
+          OnClick = btnChangeScenarioClick
+        end
+        object Bevel1: TBevel
+          Left = 8
+          Top = 95
+          Width = 266
+          Height = 13
+          Shape = bsTopLine
+        end
+        object btnRunStop: TSpeedButton
+          Left = 3
+          Top = 116
+          Width = 100
+          Height = 34
+          AllowAllUp = True
+          GroupIndex = 1
+          Caption = 'Run/Stop'
+          OnClick = btnRunStopClick
+        end
+        object Label3: TLabel
+          Left = 8
+          Top = 168
+          Width = 98
+          Height = 17
+          Caption = 'Simulator speed:'
+        end
+        object Bevel2: TBevel
+          Left = 5
+          Top = 268
+          Width = 266
+          Height = 13
+          Shape = bsTopLine
+        end
+        object Label4: TLabel
+          Left = 8
+          Top = 8
+          Width = 90
+          Height = 17
+          Caption = 'Active scenario:'
+        end
+        object tbSimSpeed: TTrackBar
+          Left = 8
+          Top = 192
+          Width = 260
+          Height = 45
+          Min = 1
+          Position = 1
+          TabOrder = 0
+          OnChange = tbSimSpeedChange
+        end
+        object CheckBox1: TCheckBox
+          Left = 8
+          Top = 66
+          Width = 161
+          Height = 17
+          Caption = 'Restart on file change'
+          TabOrder = 1
+        end
+      end
     end
   end
   object ThreadImitation: TTimer
     Enabled = False
     Interval = 100
-    OnTimer = ThreadImitationTimer
     Left = 325
     Top = 36
   end

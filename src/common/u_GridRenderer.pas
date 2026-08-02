@@ -8,11 +8,9 @@ uses System.Skia, System.Types,
 
 type
   TGridRenderer = class
-    class procedure RenderFrame(aCanvas: ISkCanvas; aWidth, aHeight: Integer;
-      const aGrid: TCellArray; const Ants: TAntRenderArray); overload;
-
-    class procedure RenderFrame(aCanvas: ISkCanvas; aWidth, aHeight: Integer;
-      const ARenderBuffer: TRenderBuffer); overload;
+  public
+    class procedure RenderFrame(Canvas: ISkCanvas; Width, Height: Integer;
+      const Buffer: TRenderBuffer);
   end;
 
 implementation
@@ -29,10 +27,8 @@ const
 
 { TGridRenderer }
 
-
-
-class procedure TGridRenderer.RenderFrame(aCanvas: ISkCanvas; aWidth,
-  aHeight: Integer; const aGrid: TCellArray; const Ants: TAntRenderArray);
+class procedure TGridRenderer.RenderFrame(Canvas: ISkCanvas; Width, Height: Integer;
+  const Buffer: TRenderBuffer);
 var
   cellSize: Single;
   offsetX, offsetY: Single;
@@ -42,11 +38,11 @@ var
   half: Single;
 begin
   // Calculate cell size for letterbox/pillarbox fit
-  cellSize := Min(aWidth / (GRID_EXTENT + 1), aHeight / (GRID_EXTENT + 1));
+  cellSize := Min(Width / (GRID_EXTENT + 1), Height / (GRID_EXTENT + 1));
 
   // Center the grid in the available space
-  offsetX := (aWidth - cellSize * (GRID_EXTENT + 1)) / 2;
-  offsetY := (aHeight - cellSize * (GRID_EXTENT + 1)) / 2;
+  offsetX := (Width - cellSize * (GRID_EXTENT + 1)) / 2;
+  offsetY := (Height - cellSize * (GRID_EXTENT + 1)) / 2;
 
   paint := TSkPaint.Create;
   paint.AntiAlias := False;
@@ -56,9 +52,9 @@ begin
   for var y := 0 to GRID_EXTENT do
     for var x := 0 to GRID_EXTENT do
     begin
-      var color := aGrid.GetColor(x, y);
+      var color := Buffer.Cells.GetColor(x, y);
       paint.Color := COLOR_MAP[color];
-      aCanvas.DrawRect(
+      Canvas.DrawRect(
         RectF(
           offsetX + x * cellSize,
           offsetY + y * cellSize,
@@ -73,13 +69,13 @@ begin
 
   half := cellSize / 2;
 
-  for var i := 0 to High(Ants) do
+  for var i := 0 to High(Buffer.Ants) do
   begin
-    cx := offsetX + Ants[i].Loc.X * cellSize + half;
-    cy := offsetY + Ants[i].Loc.Y * cellSize + half;
+    cx := offsetX + Buffer.Ants[i].Loc.X * cellSize + half;
+    cy := offsetY + Buffer.Ants[i].Loc.Y * cellSize + half;
 
     path := TSkPathBuilder.Create;
-    case Ants[i].Facing of
+    case Buffer.Ants[i].Facing of
       diNorth:
       begin
         path.MoveTo(PointF(cx, cy - half));
@@ -106,14 +102,8 @@ begin
       end;
     end;
     path.Close;
-    aCanvas.DrawPath(path.Detach, paint);
+    Canvas.DrawPath(path.Detach, paint);
   end;
-end;
-
-class procedure TGridRenderer.RenderFrame(aCanvas: ISkCanvas; aWidth, aHeight: Integer;
-  const ARenderBuffer: TRenderBuffer);
-begin
-
 end;
 
 end.

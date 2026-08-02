@@ -7,12 +7,12 @@ object MainForm: TMainForm
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -12
+  Font.Height = -13
   Font.Name = 'Segoe UI'
   Font.Style = []
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  TextHeight = 15
+  TextHeight = 17
   object Arena: TSkAnimatedPaintBox
     AlignWithMargins = True
     Left = 301
@@ -42,18 +42,44 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     ShowCaption = False
     TabOrder = 1
+    object Label1: TLabel
+      Left = 112
+      Top = 24
+      Width = 35
+      Height = 17
+      Caption = 'Steps:'
+    end
+    object lblTotalSteps: TLabel
+      Left = 160
+      Top = 24
+      Width = 97
+      Height = 15
+      AutoSize = False
+      Caption = '0'
+    end
     object Button1: TButton
-      Left = 32
-      Top = 32
+      Left = 16
+      Top = 16
       Width = 75
       Height = 25
       Caption = 'Button1'
       TabOrder = 0
       OnClick = Button1Click
     end
+    object tbSimSpeed: TTrackBar
+      Left = 16
+      Top = 80
+      Width = 241
+      Height = 45
+      Min = 1
+      Position = 1
+      TabOrder = 1
+      OnChange = tbSimSpeedChange
+    end
   end
   object ThreadImitation: TTimer
-    Interval = 16
+    Enabled = False
+    Interval = 100
     OnTimer = ThreadImitationTimer
     Left = 325
     Top = 36

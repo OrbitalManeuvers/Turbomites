@@ -86,6 +86,7 @@ end;
 
 procedure TSimulator.Step;
 begin
+  Inc(fStats.StepCount);
   for var i := 0 to High(fAnts) do
   begin
     // 1. read color under feet

@@ -15,6 +15,7 @@ type
   TColorStats = array[0 .. MAX_COLORS - 1] of Cardinal;
 
   TSessionStats = record
+    StepCount: Int64;
     Written: TColorStats;
     Erased: TColorStats;
   end;

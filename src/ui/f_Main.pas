@@ -8,7 +8,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.Skia, Vcl.Skia, Vcl.ExtCtrls,
   Vcl.StdCtrls,
   u_Simulator, u_SimTypes, u_Scenarios, u_SimThreads,
-  u_RenderBuffers;
+  u_RenderBuffers, Vcl.ComCtrls;
 
 type
   TMainForm = class(TForm)
@@ -16,12 +16,16 @@ type
     ToolPanel: TPanel;
     Button1: TButton;
     ThreadImitation: TTimer;
+    tbSimSpeed: TTrackBar;
+    Label1: TLabel;
+    lblTotalSteps: TLabel;
     procedure ArenaAnimationDraw(ASender: TObject; const ACanvas: ISkCanvas;
       const ADest: TRectF; const AProgress: Double; const AOpacity: Single);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure ThreadImitationTimer(Sender: TObject);
+    procedure tbSimSpeedChange(Sender: TObject);
   private
     Scenario: TScenario;
     SimThread: TSimThread;
@@ -68,13 +72,12 @@ procedure TMainForm.Button1Click(Sender: TObject);
 begin
   SimThread.LoadScenario(Scenario);
 
-// SimThread.Settings := settings
+  SimThread.Speed := 1;
+  SimThread.Active := True;
+  ThreadImitation.Enabled := True;
 
 // ResetStats;
 
-  SimThread.Active := True;
-
-  ThreadImitation.Enabled := True;
 end;
 
 procedure TMainForm.ArenaAnimationDraw(ASender: TObject;
@@ -97,8 +100,7 @@ begin
     // call renderer
     TGridRenderer.RenderFrame(ACanvas, size.X, size.Y, RenderBuffer);
 
-
-    UpdateStats; // (dummy);
+    UpdateStats;
   end
   else
     RenderStartupView(ACanvas, size.X, size.Y);
@@ -130,13 +132,20 @@ begin
   ACanvas.DrawSimpleText(S_CAPTION, TextX, AHeight * 0.22, Font, Paint);
 end;
 
+procedure TMainForm.tbSimSpeedChange(Sender: TObject);
+begin
+  SimThread.Speed := tbSimSpeed.Position;
+end;
+
 procedure TMainForm.ThreadImitationTimer(Sender: TObject);
 begin
-  SimThread.Step;
+//  SimThread.Step;
 end;
 
 procedure TMainForm.UpdateStats;
 begin
+  lblTotalSteps.Caption := RenderBuffer.Stats.StepCount.ToString;
+
 //  if TickCounter mod 10 = 0 then
 //    ToolFrame.TickCounter.Caption := TickCounter.ToString;
 end;

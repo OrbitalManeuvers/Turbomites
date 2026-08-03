@@ -3,6 +3,7 @@ unit u_Scenarios;
 interface
 
 uses System.Types,
+
   u_SimTypes, u_States;
 
 type
@@ -36,7 +37,7 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    procedure LoadFromFile(const aFileName: string);
+    procedure LoadFromFile(const AFileName: string);
 
     class function GetInfo(const AFileName: string): TScenarioInfo;
 
@@ -55,6 +56,7 @@ type
 implementation
 
 uses System.JSON, System.Generics.Collections, System.SysUtils, System.IOUtils,
+
   u_SimpleJSON;
 
 const
@@ -220,14 +222,14 @@ begin
   end;
 end;
 
-procedure TScenario.LoadFromFile(const aFileName: string);
+procedure TScenario.LoadFromFile(const AFileName: string);
 var
   JSON: TJSONObject;
 begin
-  if not TFile.Exists(aFileName) then
+  if not TFile.Exists(AFileName) then
     Exit;
 
-  JSON := TJSONObject.ParseJSONValue(TFile.ReadAllText(aFileName)) as TJSONObject;
+  JSON := TJSONObject.ParseJSONValue(TFile.ReadAllText(AFileName)) as TJSONObject;
   try
     fTitle := JSON.StrValue(KEY_TITLE);
     fDescription := JSON.StrValue(KEY_DESCRIPTION);

@@ -146,7 +146,7 @@ begin
     fAntRenderInfo[i].Loc := newLoc;
     fAntRenderInfo[i].Facing := fAnts[i].Facing;
 
-    // 6. change state to rule's next state, or remain in current state if no "state" node
+    // 6. change state to rule's next state, if specified
     if rule.State <> '' then
     begin
       fAnts[i].State.SelectState(rule.State);

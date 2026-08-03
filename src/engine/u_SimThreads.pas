@@ -3,6 +3,7 @@ unit u_SimThreads;
 interface
 
 uses System.Classes, System.SyncObjs,
+
   u_SimTypes, u_Simulator, u_Scenarios, u_RenderBuffers;
 
 type
@@ -26,7 +27,7 @@ type
     constructor Create;
     destructor Destroy; override;
 
-    procedure LoadScenario(aScenario: TScenario);
+    procedure LoadScenario(AScenario: TScenario);
     procedure EndScenario;
     function PullSnapshot(var ADest: TRenderBuffer): Boolean;
 
@@ -44,7 +45,7 @@ begin
   inherited Create(True); // create suspended
   fSimulator := TSimulator.Create;
   fLock := TCriticalSection.Create;
-  fSpeed := 5;
+  fSpeed := Low(TSimSpeed);
   SetSpeed(fSpeed);
 end;
 
@@ -71,13 +72,13 @@ begin
   end;
 end;
 
-procedure TSimThread.LoadScenario(aScenario: TScenario);
+procedure TSimThread.LoadScenario(AScenario: TScenario);
 begin
   fActive := False;
   fLock.Acquire;
   try
-    fScenario := aScenario;
-    fSimulator.BeginSession(aScenario);
+    fScenario := AScenario;
+    fSimulator.BeginSession(AScenario);
     fIsDirty := False;
   finally
     fLock.Release;

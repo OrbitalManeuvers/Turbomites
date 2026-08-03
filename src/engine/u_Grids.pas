@@ -11,11 +11,11 @@ type
   TGrid = record helper for TCellArray
   public
     procedure Clear;
-    function GetColor(aX, aY: Integer): Byte; overload;
-    function GetColor(Loc: TPoint): Byte; overload;
+    function GetColor(AX, AY: Integer): Byte; overload;
+    function GetColor(ALoc: TPoint): Byte; overload;
 
-    procedure SetColor(aX, aY: Integer; aColor: Byte); overload;
-    procedure SetColor(Loc: TPoint; aColor: Byte); overload;
+    procedure SetColor(AX, AY: Integer; AColor: Byte); overload;
+    procedure SetColor(ALoc: TPoint; AColor: Byte); overload;
   end;
 
 implementation
@@ -29,24 +29,24 @@ begin
       Grid[aX, aY] := 0;
 end;
 
-function TGrid.GetColor(aX, aY: Integer): Byte;
+function TGrid.GetColor(AX, AY: Integer): Byte;
 begin
-  Result := Grid[aX, aY];
+  Result := Grid[AX, AY];
 end;
 
-procedure TGrid.SetColor(aX, aY: Integer; aColor: Byte);
+procedure TGrid.SetColor(AX, AY: Integer; AColor: Byte);
 begin
-  Grid[aX, aY] := aColor;
+  Grid[AX, AY] := AColor;
 end;
 
-function TGrid.GetColor(Loc: TPoint): Byte;
+function TGrid.GetColor(ALoc: TPoint): Byte;
 begin
-  Result := GetColor(Loc.X, Loc.Y);
+  Result := GetColor(ALoc.X, ALoc.Y);
 end;
 
-procedure TGrid.SetColor(Loc: TPoint; aColor: Byte);
+procedure TGrid.SetColor(ALoc: TPoint; AColor: Byte);
 begin
-  SetColor(Loc.X, Loc.Y, aColor);
+  SetColor(ALoc.X, ALoc.Y, AColor);
 end;
 
 end.

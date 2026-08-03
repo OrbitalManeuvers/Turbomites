@@ -2,7 +2,7 @@ object MainForm: TMainForm
   Left = 0
   Top = 0
   Caption = 'Turbomites'
-  ClientHeight = 742
+  ClientHeight = 659
   ClientWidth = 1147
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object MainForm: TMainForm
     Left = 301
     Top = 4
     Width = 842
-    Height = 734
+    Height = 651
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -31,7 +31,7 @@ object MainForm: TMainForm
     Left = 4
     Top = 4
     Width = 289
-    Height = 734
+    Height = 651
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -46,26 +46,29 @@ object MainForm: TMainForm
       Left = 0
       Top = 0
       Width = 287
-      Height = 734
+      Height = 651
       ActivePage = tsRunScenario
       Align = alClient
       TabOrder = 0
-      ExplicitTop = 144
-      ExplicitHeight = 590
       object tsLoadScenario: TTabSheet
         Caption = 'Load'
+        TabVisible = False
+        DesignSize = (
+          279
+          641)
         object Label2: TLabel
-          Left = 4
+          Left = 0
           Top = 16
           Width = 114
           Height = 17
           Caption = 'Available scenarios:'
         end
         object ScenarioList: TControlList
-          Left = 4
+          Left = 0
           Top = 39
-          Width = 273
-          Height = 418
+          Width = 276
+          Height = 555
+          Anchors = [akLeft, akTop, akBottom]
           ItemMargins.Left = 0
           ItemMargins.Top = 0
           ItemMargins.Right = 0
@@ -74,11 +77,12 @@ object MainForm: TMainForm
           TabOrder = 0
           OnBeforeDrawItem = ScenarioListBeforeDrawItem
           OnItemClick = ScenarioListItemClick
+          OnItemDblClick = ScenarioListItemDblClick
           object lblScenarioTitle: TLabel
             AlignWithMargins = True
             Left = 8
             Top = 4
-            Width = 257
+            Width = 260
             Height = 21
             Margins.Left = 8
             Margins.Top = 4
@@ -101,7 +105,7 @@ object MainForm: TMainForm
             AlignWithMargins = True
             Left = 8
             Top = 28
-            Width = 257
+            Width = 260
             Height = 38
             Margins.Left = 8
             Margins.Top = 4
@@ -124,10 +128,11 @@ object MainForm: TMainForm
           end
         end
         object btnLoad: TButton
-          Left = 4
-          Top = 463
+          Left = 143
+          Top = 603
           Width = 133
           Height = 33
+          Anchors = [akLeft, akBottom]
           Caption = 'Load Scenario'
           TabOrder = 1
           OnClick = btnLoadClick
@@ -136,6 +141,7 @@ object MainForm: TMainForm
       object tsRunScenario: TTabSheet
         Caption = 'Run'
         ImageIndex = 1
+        TabVisible = False
         object lblTotalSteps: TLabel
           Left = 160
           Top = 126
@@ -192,7 +198,7 @@ object MainForm: TMainForm
         end
         object Bevel2: TBevel
           Left = 5
-          Top = 268
+          Top = 244
           Width = 266
           Height = 13
           Shape = bsTopLine
@@ -224,11 +230,5 @@ object MainForm: TMainForm
         end
       end
     end
-  end
-  object ThreadImitation: TTimer
-    Enabled = False
-    Interval = 100
-    Left = 325
-    Top = 36
   end
 end

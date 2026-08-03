@@ -6,16 +6,15 @@ uses
   System.Types,
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, System.Skia, Vcl.Skia, Vcl.ExtCtrls,
-  Vcl.StdCtrls,
+  Vcl.StdCtrls, Vcl.Buttons, Vcl.ComCtrls, Vcl.ControlList,
+
   u_Simulator, u_SimTypes, u_Scenarios, u_SimThreads,
-  u_RenderBuffers, Vcl.ComCtrls, Vcl.ControlList, u_ScenarioFileList,
-  Vcl.Buttons;
+  u_RenderBuffers, u_ScenarioFileList;
 
 type
   TMainForm = class(TForm)
     Arena: TSkAnimatedPaintBox;
     ToolPanel: TPanel;
-    ThreadImitation: TTimer;
     tbSimSpeed: TTrackBar;
     Label1: TLabel;
     lblTotalSteps: TLabel;
@@ -46,6 +45,7 @@ type
     procedure btnLoadClick(Sender: TObject);
     procedure ScenarioListItemClick(Sender: TObject);
     procedure btnRunStopClick(Sender: TObject);
+    procedure ScenarioListItemDblClick(Sender: TObject);
   private type
     TActiveScenario = record
       FileName: string;
@@ -60,6 +60,7 @@ type
     ActiveScenario: TActiveScenario;
 
     procedure UpdateStats;
+    procedure ResetStats;
     procedure HandleScenarioListChange(Sender: TObject);
     procedure UpdateControls;
     procedure ChangeActiveScenario(const AScenarioIndex: Integer);
@@ -74,7 +75,7 @@ implementation
 {$R *.dfm}
 
 uses System.UITypes, System.IOUtils,
-  u_GridRenderer, u_SplashPainter;
+  u_GridRenderer, u_SplashPainter, u_Grids;
 
 { TMainForm }
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -87,22 +88,11 @@ begin
   FileList.OnChange := HandleScenarioListChange;
   ScenarioList.ItemCount := FileList.Count;
 
-
   lblScenarioTitle.Font.Color := clWhite;
   lblScenarioDesc.Font.Color := $00CCB0B0;
   lblActiveScenario.Font := lblScenarioTitle.Font;
 
   ActiveScenario := Default(TActiveScenario);
-
-
-  // !! hard coded scenario selection for now
-//  Scenario := TScenario.Create;
-//  try
-//    Scenario.LoadFromFile('first.json');
-//  except
-//    Scenario.Free;
-//    raise;
-//  end;
 
   PageControl.ActivePage := tsLoadScenario;
   UpdateControls;
@@ -121,12 +111,19 @@ begin
   ScenarioList.ItemCount := FileList.Count;  // not pertinent here, move to page selected
 end;
 
+procedure TMainForm.ResetStats;
+begin
+  RenderBuffer.Stats := Default(TSessionStats);
+end;
+
 procedure TMainForm.btnChangeScenarioClick(Sender: TObject);
 begin
   SimThread.EndScenario;
   ActiveScenario.Scenario.Free;
   ActiveScenario := Default(TActiveScenario);
+  RenderBuffer.Cells.Clear;
   PageControl.ActivePage := tsLoadScenario;
+
   UpdateControls;
 end;
 
@@ -153,9 +150,13 @@ begin
   SimThread.LoadScenario(ActiveScenario.Scenario);
   SimThread.Speed := 1;
   tbSimSpeed.Position := SimThread.Speed;
-  PageControl.ActivePage := tsRunScenario;
 
+  ResetStats;
+  UpdateStats;
+
+  PageControl.ActivePage := tsRunScenario;
   UpdateControls;
+
 end;
 
 procedure TMainForm.ArenaAnimationDraw(ASender: TObject;
@@ -197,6 +198,12 @@ end;
 procedure TMainForm.ScenarioListItemClick(Sender: TObject);
 begin
   UpdateControls;
+end;
+
+procedure TMainForm.ScenarioListItemDblClick(Sender: TObject);
+begin
+  if ScenarioList.ItemIndex <> -1 then
+    btnLoadClick(nil);
 end;
 
 procedure TMainForm.tbSimSpeedChange(Sender: TObject);

@@ -47,7 +47,7 @@ object MainForm: TMainForm
       Top = 0
       Width = 287
       Height = 651
-      ActivePage = tsRunScenario
+      ActivePage = tsLoadScenario
       Align = alClient
       TabOrder = 0
       object tsLoadScenario: TTabSheet
@@ -142,33 +142,18 @@ object MainForm: TMainForm
         Caption = 'Run'
         ImageIndex = 1
         TabVisible = False
-        object lblTotalSteps: TLabel
-          Left = 160
-          Top = 126
-          Width = 97
-          Height = 15
-          AutoSize = False
-          Caption = '0'
-        end
-        object Label1: TLabel
-          Left = 112
-          Top = 126
-          Width = 35
-          Height = 17
-          Caption = 'Steps:'
-        end
         object lblActiveScenario: TLabel
           Left = 8
-          Top = 36
+          Top = 26
           Width = 98
           Height = 17
           Caption = 'lblActiveScenario'
         end
         object btnChangeScenario: TSpeedButton
-          Left = 168
-          Top = 4
+          Left = 176
+          Top = 23
           Width = 84
-          Height = 25
+          Height = 34
           Caption = 'Change...'
           OnClick = btnChangeScenarioClick
         end
@@ -180,9 +165,9 @@ object MainForm: TMainForm
           Shape = bsTopLine
         end
         object btnRunStop: TSpeedButton
-          Left = 3
-          Top = 116
-          Width = 100
+          Left = 30
+          Top = 114
+          Width = 214
           Height = 34
           AllowAllUp = True
           GroupIndex = 1
@@ -205,10 +190,36 @@ object MainForm: TMainForm
         end
         object Label4: TLabel
           Left = 8
-          Top = 8
+          Top = 4
           Width = 90
           Height = 17
           Caption = 'Active scenario:'
+        end
+        object Label5: TLabel
+          Left = 8
+          Top = 416
+          Width = 38
+          Height = 17
+          Caption = 'Mode:'
+        end
+        object btnStatsMode1: TSpeedButton
+          Left = 90
+          Top = 409
+          Width = 89
+          Height = 33
+          AllowAllUp = True
+          GroupIndex = 2
+          Down = True
+          Caption = 'Territory'
+        end
+        object btnStatsMode2: TSpeedButton
+          Left = 180
+          Top = 409
+          Width = 89
+          Height = 33
+          AllowAllUp = True
+          GroupIndex = 2
+          Caption = 'History'
         end
         object tbSimSpeed: TTrackBar
           Left = 8
@@ -227,6 +238,13 @@ object MainForm: TMainForm
           Height = 17
           Caption = 'Restart on file change'
           TabOrder = 1
+        end
+        object StatDisplay: TSkAnimatedPaintBox
+          Left = 8
+          Top = 256
+          Width = 263
+          Height = 145
+          OnAnimationDraw = StatDisplayAnimationDraw
         end
       end
     end

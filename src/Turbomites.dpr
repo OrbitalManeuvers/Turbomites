@@ -16,7 +16,8 @@ uses
   u_SimThreads in 'engine\u_SimThreads.pas',
   u_RenderBuffers in 'common\u_RenderBuffers.pas',
   u_SplashPainter in 'ui\u_SplashPainter.pas',
-  u_ScenarioFileList in 'ui\u_ScenarioFileList.pas';
+  u_ScenarioFileList in 'ui\u_ScenarioFileList.pas',
+  u_StatsPainter in 'ui\u_StatsPainter.pas';
 
 {$R *.res}
 

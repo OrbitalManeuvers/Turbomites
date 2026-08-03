@@ -16,8 +16,6 @@ type
     Arena: TSkAnimatedPaintBox;
     ToolPanel: TPanel;
     tbSimSpeed: TTrackBar;
-    Label1: TLabel;
-    lblTotalSteps: TLabel;
     PageControl: TPageControl;
     tsLoadScenario: TTabSheet;
     tsRunScenario: TTabSheet;
@@ -34,6 +32,10 @@ type
     Label3: TLabel;
     Bevel2: TBevel;
     Label4: TLabel;
+    StatDisplay: TSkAnimatedPaintBox;
+    Label5: TLabel;
+    btnStatsMode1: TSpeedButton;
+    btnStatsMode2: TSpeedButton;
     procedure ArenaAnimationDraw(ASender: TObject; const ACanvas: ISkCanvas;
       const ADest: TRectF; const AProgress: Double; const AOpacity: Single);
     procedure FormCreate(Sender: TObject);
@@ -46,6 +48,9 @@ type
     procedure ScenarioListItemClick(Sender: TObject);
     procedure btnRunStopClick(Sender: TObject);
     procedure ScenarioListItemDblClick(Sender: TObject);
+    procedure StatDisplayAnimationDraw(ASender: TObject;
+      const ACanvas: ISkCanvas; const ADest: TRectF; const AProgress: Double;
+      const AOpacity: Single);
   private type
     TActiveScenario = record
       FileName: string;
@@ -59,7 +64,6 @@ type
 
     ActiveScenario: TActiveScenario;
 
-    procedure UpdateStats;
     procedure ResetStats;
     procedure HandleScenarioListChange(Sender: TObject);
     procedure UpdateControls;
@@ -75,7 +79,7 @@ implementation
 {$R *.dfm}
 
 uses System.UITypes, System.IOUtils,
-  u_GridRenderer, u_SplashPainter, u_Grids;
+  u_GridRenderer, u_SplashPainter, u_Grids, u_StatsPainter;
 
 { TMainForm }
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -152,7 +156,6 @@ begin
   tbSimSpeed.Position := SimThread.Speed;
 
   ResetStats;
-  UpdateStats;
 
   PageControl.ActivePage := tsRunScenario;
   UpdateControls;
@@ -178,8 +181,6 @@ begin
 
     // call renderer
     TGridRenderer.RenderFrame(ACanvas, size.X, size.Y, RenderBuffer);
-
-    UpdateStats;
   end
   else
     TSplashPainter.RenderSplash(ACanvas, size.X, size.Y);
@@ -206,6 +207,17 @@ begin
     btnLoadClick(nil);
 end;
 
+procedure TMainForm.StatDisplayAnimationDraw(ASender: TObject;
+  const ACanvas: ISkCanvas; const ADest: TRectF; const AProgress: Double;
+  const AOpacity: Single);
+begin
+  var size := Point(Round(ADest.Width), Round(ADest.Height));
+  var mode := TStatsDisplayMode.sdPercentBars;
+  if btnStatsMode2.Down then
+    mode := TStatsDisplayMode.sdWrittenVsErased;
+  TStatsPainter.RenderStats(ACanvas, size.X, size.Y, RenderBuffer.Stats, mode);
+end;
+
 procedure TMainForm.tbSimSpeedChange(Sender: TObject);
 begin
   SimThread.Speed := tbSimSpeed.Position;
@@ -226,14 +238,6 @@ begin
     else
       btnRunStop.Caption := 'Stopped';
   end;
-end;
-
-procedure TMainForm.UpdateStats;
-begin
-  lblTotalSteps.Caption := RenderBuffer.Stats.StepCount.ToString;
-
-//  if TickCounter mod 10 = 0 then
-//    ToolFrame.TickCounter.Caption := TickCounter.ToString;
 end;
 
 end.

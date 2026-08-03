@@ -17,13 +17,6 @@ implementation
 
 uses System.UITypes, System.Math;
 
-const
-  COLOR_MAP: array[0 .. MAX_COLORS - 1] of TAlphaColor = (
-    TAlphaColors.Black,
-    TAlphaColors.White,
-    TAlphaColors.Dodgerblue,
-    TAlphaColors.Crimson);
-  ANT_COLOR = TAlphaColors.Red;
 
 { TGridRenderer }
 

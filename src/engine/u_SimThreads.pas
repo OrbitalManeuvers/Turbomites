@@ -45,8 +45,8 @@ begin
   inherited Create(True); // create suspended
   fSimulator := TSimulator.Create;
   fLock := TCriticalSection.Create;
-  fSpeed := Low(TSimSpeed);
-  SetSpeed(fSpeed);
+  fSpeed := 2;
+  SetSpeed(1);
 end;
 
 destructor TSimThread.Destroy;
